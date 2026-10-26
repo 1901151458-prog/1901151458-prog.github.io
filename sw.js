@@ -1,0 +1,72 @@
+/* 学习资料总站 / 五个子站 · 统一缓存与离线兜底 */
+const CACHE = 'dsh-sites-v1';
+const CORE = [
+  '/',
+  '/index.html',
+  '/offline.html',
+  '/english-materials/',
+  '/sishu/',
+  '/english-vocab-test/',
+  '/cefr-vocab-test/',
+  '/UDHR/'
+];
+
+self.addEventListener('install', (event) => {
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE);
+    await Promise.all(CORE.map(async (url) => {
+      try {
+        const res = await fetch(url, { cache: 'reload' });
+        if (res && res.ok) await cache.put(url, res.clone());
+      } catch (e) {}
+    }));
+    await self.skipWaiting();
+  })());
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)));
+    await self.clients.claim();
+  })());
+});
+
+async function networkFirst(request) {
+  const cache = await caches.open(CACHE);
+  try {
+    const res = await fetch(request);
+    if (res && res.ok && request.method === 'GET') cache.put(request, res.clone());
+    return res;
+  } catch (e) {
+    const cached = await cache.match(request, { ignoreSearch: true });
+    if (cached) return cached;
+    const offline = await cache.match('/offline.html');
+    if (offline) return offline;
+    return new Response('网络暂不可用，请稍后重试。', { status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+  }
+}
+
+async function staleWhileRevalidate(request) {
+  const cache = await caches.open(CACHE);
+  const cached = await cache.match(request, { ignoreSearch: true });
+  const network = fetch(request).then((res) => {
+    if (res && res.ok && request.method === 'GET') cache.put(request, res.clone());
+    return res;
+  }).catch(() => null);
+  return cached || (await network) || new Response('', { status: 504 });
+}
+
+self.addEventListener('fetch', (event) => {
+  const request = event.request;
+  if (request.method !== 'GET') return;
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return;
+  if (request.mode === 'navigate') {
+    event.respondWith(networkFirst(request));
+    return;
+  }
+  if (/\.(?:css|js|mjs|svg|png|jpe?g|webp|gif|ico|woff2?|ttf|pdf|json)(?:\?|$)/i.test(url.pathname + url.search)) {
+    event.respondWith(staleWhileRevalidate(request));
+  }
+});
