@@ -1,10 +1,10 @@
 /* 全站搜索组件 · 与站点主题解耦 */
-.dsh-search{position:relative;width:100%;max-width:620px}
-.dsh-search form{display:flex;gap:8px;align-items:center}
-.dsh-input{width:100%;border:1px solid rgba(143,195,240,.28);border-radius:12px;padding:12px 15px;font:inherit;font-size:14px;line-height:1.4;background:rgba(8,20,36,.86);color:#eaf4ff;outline:none;transition:border-color .15s ease,box-shadow .15s ease}
+.dsh-search{position:relative;width:100%;max-width:620px;box-sizing:border-box}
+.dsh-search form{display:flex;gap:8px;align-items:center;width:100%;min-width:0}
+.dsh-input{flex:1 1 auto;min-width:0;width:auto;box-sizing:border-box;border:1px solid rgba(143,195,240,.28);border-radius:12px;padding:12px 15px;font:inherit;font-size:14px;line-height:1.4;background:rgba(8,20,36,.86);color:#eaf4ff;outline:none;transition:border-color .15s ease,box-shadow .15s ease}
 .dsh-input::placeholder{color:rgba(200,220,240,.55)}
 .dsh-input:focus{border-color:rgba(143,195,240,.72);box-shadow:0 0 0 4px rgba(91,146,229,.16)}
-.dsh-btn{flex:none;border:1px solid rgba(143,195,240,.4);border-radius:12px;padding:11px 16px;background:rgba(143,195,240,.12);color:#eaf4ff;font:inherit;font-size:13px;cursor:pointer}
+.dsh-btn{flex:none;box-sizing:border-box;border:1px solid rgba(143,195,240,.4);border-radius:12px;padding:11px 16px;background:rgba(143,195,240,.12);color:#eaf4ff;font:inherit;font-size:13px;cursor:pointer}
 .dsh-btn:hover{background:rgba(143,195,240,.22)}
 .dsh-results{position:absolute;z-index:80;left:0;right:0;top:calc(100% + 8px);max-height:min(68vh,560px);overflow:auto;border:1px solid rgba(143,195,240,.24);border-radius:14px;background:rgba(9,22,38,.98);box-shadow:0 24px 70px rgba(0,0,0,.42);padding:8px}
 .dsh-results[hidden]{display:none}
