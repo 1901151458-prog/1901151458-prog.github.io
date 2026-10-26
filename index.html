@@ -106,11 +106,21 @@ html[data-theme="light"] footer{background:linear-gradient(180deg,transparent,rg
 .foot-links a{border-bottom:1px solid transparent;padding-bottom:1px}
 .foot-links a:hover{border-bottom-color:var(--gold);color:var(--ink)}
 @media(max-width:760px){.hero-meta{gap:8px}.hero-meta span{padding:6px 11px;font-size:11px}}
+
+/* 我的学习 */
+.dash{padding-top:8px;padding-bottom:8px}
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px}
+.dash-card{display:flex;flex-direction:column;gap:4px;border:1px solid var(--line);border-radius:14px;background:var(--card);padding:14px 16px;text-decoration:none;color:var(--ink);transition:border-color .18s ease,transform .18s ease}
+.dash-card:hover{border-color:var(--blue);transform:translateY(-2px)}
+.dash-k{font-family:system-ui,sans-serif;font-size:10.5px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+.dash-card b{font-size:14px;font-weight:600;line-height:1.5}
+.dash-card small{font-size:11.5px;color:var(--muted);line-height:1.6}
+.dash-card .dash-a{margin-top:4px;font-size:11.5px;color:var(--blue);font-family:system-ui,sans-serif}
 </style>
 <script src="/sw-register.js?v=3" defer></script>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
-<link rel="stylesheet" href="/search-widget.css?v=1">
+<link rel="stylesheet" href="/search-widget.css?v=2">
 </head>
 <body>
 <header><div class="wrap bar">
@@ -130,11 +140,16 @@ html[data-theme="light"] footer{background:linear-gradient(180deg,transparent,rg
     <span><b>5</b>个站点</span><span><b>4</b>类内容</span><span><b>142</b>个页面</span><span><b>免费</b>阅读与测试</span>
   </div>
   <div class="hub-search dsh-search" id="hubSearchWrap">
-    <form role="search"><input class="dsh-input" id="hubSearch" type="search" placeholder="搜索 142 个页面 / 425 篇 SDG 文章 / 四书篇目…" aria-label="搜索全站"><button class="dsh-btn" type="submit">搜索</button></form>
+    <form role="search"><input class="dsh-input" id="hubSearch" type="search" placeholder="搜索 142 个页面 / 425 篇 SDG 文章 / 四书篇目…" aria-label="搜索全站" aria-expanded="false" aria-controls="hubResults" role="combobox" aria-autocomplete="list" autocomplete="off"><button class="dsh-btn" type="submit">搜索</button></form>
     <div class="dsh-results" id="hubResults" hidden></div>
   </div>
 </section>
 
+
+<section class="dash wrap" id="dashboard" hidden>
+  <div class="section-label">MY LEARNING · 我的学习</div>
+  <div class="dash-grid" id="dashGrid"></div>
+</section>
 <section class="sites wrap" id="sites">
   <div class="section-label">SITES · 站点入口</div>
   <div class="grid">
@@ -222,9 +237,51 @@ html[data-theme="light"] footer{background:linear-gradient(180deg,transparent,rg
   });
 })();
 </script>
-<script src="/search-widget.js?v=1"></script>
+<script src="/search-widget.js?v=2"></script>
 <script>
 DshSearch.init({input:'#hubSearch',results:'#hubResults',index:'/search-index.json',limit:20});
+</script>
+<script>
+(function(){
+  function read(k,d){ try { var v=JSON.parse(localStorage.getItem(k)||'null'); return v==null?d:v; } catch(e){ return d; } }
+  var cards=[];
+  function card(kind,title,sub,href){
+    var a=document.createElement('a'); a.className='dash-card'; a.href=href;
+    var k=document.createElement('span'); k.className='dash-k'; k.textContent=kind;
+    var b=document.createElement('b'); b.textContent=title;
+    var s=document.createElement('small'); s.textContent=sub||'';
+    var go=document.createElement('span'); go.className='dash-a'; go.textContent='继续 →';
+    a.appendChild(k); a.appendChild(b); if(sub) a.appendChild(s); a.appendChild(go); cards.push(a);
+  }
+  var recent=read('dsh-recent',[]);
+  if(Array.isArray(recent)){
+    for(var i=0;i<recent.length;i++){
+      var r=recent[i];
+      if(!r||!r.u||/^\/root-site\//.test(r.u)||/^\/(_|index_search)/.test(r.u)) continue;
+      card('最近访问', r.t||r.u, '上次打开这里', r.u); break;
+    }
+  }
+  var tests=[{key:'vt-vocab-placement-v4',name:'初中词汇测试',url:'/english-vocab-test/'},{key:'vt-cefr-placement-v1',name:'CEFR 词汇测试',url:'/cefr-vocab-test/'}];
+  var latest=null;
+  tests.forEach(function(t){
+    var st=read(t.key,null); if(!st||!Array.isArray(st.history)||!st.history.length) return;
+    var hist=st.history.slice().sort(function(a,b){return (a.ts||0)-(b.ts||0);});
+    var last=hist[hist.length-1];
+    if(last && (!latest||(last.ts||0)>(latest.ts||0))) latest={name:t.name,url:t.url,label:last.label||'已完成',estimate:last.estimate,ts:last.ts};
+  });
+  if(latest){
+    card('词汇测试', latest.label, (latest.estimate?'约 '+latest.estimate+' 词 · ':'')+'最近一次', latest.url);
+  }
+  var sdgRead=read('sdg-read-v1',[]), sdgFav=read('sdg-fav-v1',[]);
+  var rc=Array.isArray(sdgRead)?sdgRead.length:0, fc=Array.isArray(sdgFav)?sdgFav.length:0;
+  if(rc||fc) card('SDG 阅读', '已读 '+rc+' 篇 · 收藏 '+fc+' 篇', '国际阅读室', '/english-materials/sdgs/reading/');
+  var sr=read('sishu-last-read',null);
+  if(sr&&sr.u&&sr.t) card('四书进度', sr.t, '继续上次阅读', sr.u);
+  if(!cards.length) return;
+  var wrap=document.getElementById('dashboard'), grid=document.getElementById('dashGrid');
+  cards.forEach(function(c){grid.appendChild(c);});
+  wrap.hidden=false;
+})();
 </script>
 </body>
 </html>

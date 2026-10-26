@@ -1,5 +1,5 @@
 /* 学习资料总站 / 五个子站 · 统一缓存与离线兜底 */
-const CACHE = 'dsh-sites-v3';
+const CACHE = 'dsh-sites-v4';
 const CORE = [
   '/',
   '/index.html',
@@ -12,7 +12,12 @@ const CORE = [
   '/UDHR/udhr/',
   '/UDHR/udhr/assets/udhr-app.min.js',
   '/UDHR/udhr/assets/udhr.min.css',
-  '/UDHR/udhr/assets/data/1.json'
+  '/UDHR/udhr/assets/data/1.json',
+  '/sishu/assets/search-index.json',
+  '/english-materials/assets/search-index.json',
+  '/search-index.json',
+  '/search-widget.css',
+  '/search-widget.js'
 ];
 const MAX_ENTRIES = 140;
 

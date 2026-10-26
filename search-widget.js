@@ -16,6 +16,16 @@
       var timer = 0;
       var lastQuery = '';
 
+      input.setAttribute('role', 'combobox');
+      input.setAttribute('aria-autocomplete', 'list');
+      input.setAttribute('aria-expanded', 'false');
+      if (box.id) input.setAttribute('aria-controls', box.id);
+      box.setAttribute('aria-live', 'polite');
+      function setOpen(open) {
+        box.hidden = !open;
+        input.setAttribute('aria-expanded', open ? 'true' : 'false');
+      }
+
       function load() {
         if (items) return Promise.resolve(items);
         if (loading) return loading;
@@ -25,6 +35,8 @@
           .catch(function (e) { loading = null; throw e; });
         return loading;
       }
+
+      function itemOf(x) { return Array.isArray(x) ? { t: x[0], u: x[1], s: x[2], k: x[3], site: x[4] } : x; }
 
       function score(item, terms, raw) {
         var t = norm(item.t);
@@ -45,17 +57,18 @@
       }
 
       function render(query) {
-        box.hidden = false;
+        setOpen(true);
         box.innerHTML = '';
         var q = query.trim();
-        if (!q) { box.hidden = true; return; }
+        if (!q) { setOpen(false); return; }
         var terms = norm(q).split(/\s+/).filter(Boolean);
-        if (!terms.length) { box.hidden = true; return; }
+        if (!terms.length) { setOpen(false); return; }
         box.innerHTML = '<div class="dsh-empty">正在搜索…</div>';
         load().then(function (all) {
           var seen = {};
           var list = [];
-          all.forEach(function (item) {
+          all.forEach(function (rawItem) {
+            var item = itemOf(rawItem);
             var sc = score(item, terms, norm(q));
             if (sc < 0) return;
             var key = item.u + '|' + item.t;
@@ -104,7 +117,7 @@
         if (input.value.trim()) schedule();
       });
       input.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') { box.hidden = true; input.blur(); }
+        if (e.key === 'Escape') { setOpen(false); input.blur(); }
       });
       var form = input.closest('form');
       if (form) form.addEventListener('submit', function (e) {
@@ -113,11 +126,11 @@
       });
       box.addEventListener('click', function (e) {
         var a = e.target && e.target.closest ? e.target.closest('.dsh-hit') : null;
-        if (a && opt.closeOnClick !== false) box.hidden = true;
+        if (a && opt.closeOnClick !== false) setOpen(false);
       });
       document.addEventListener('click', function (e) {
         if (!opt.closeOnClick) return;
-        if (!input.contains(e.target) && !box.contains(e.target)) box.hidden = true;
+        if (!input.contains(e.target) && !box.contains(e.target)) setOpen(false);
       });
       if (opt.placeholder) input.setAttribute('placeholder', opt.placeholder);
       if (opt.autofocus) input.focus();
