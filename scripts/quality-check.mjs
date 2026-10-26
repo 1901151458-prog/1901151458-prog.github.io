@@ -16,7 +16,8 @@ const browser = await chromium.launch();
 const failures = [];
 
 for (const [name, url] of pages) {
-  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, reducedMotion: 'reduce' });
+  const page = await context.newPage();
   const errors = [];
   page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
   page.on('console', (m) => { if (m.type() === 'error') errors.push('console: ' + m.text()); });
@@ -40,6 +41,7 @@ for (const [name, url] of pages) {
     failures.push(`${name}: ${e.message}`);
   } finally {
     await page.close();
+    await context.close();
   }
 }
 

@@ -29,6 +29,7 @@ SITEMAPS = [
 # 403/429/451 are often bot protection rather than dead links.
 SOFT = {401, 403, 405, 429, 451}
 ALLOW_HOSTS = {"www.acftu.org.cn"}  # blocked from some networks; keep as warning
+SOFT_HOSTS = {"www.un.org", "un.org"}  # UN edge returns 502 to some CI/datacenter networks
 SKIP_SUFFIX = (".pdf", ".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg", ".zip")
 
 
@@ -80,15 +81,18 @@ def check_external(links, max_external):
         links = sorted(links)[:max_external]
 
     def one(url):
-        if urlparse(url).hostname in ALLOW_HOSTS:
+        host = urlparse(url).hostname
+        if host in ALLOW_HOSTS:
             return url, 0, "allow"
+        if host in SOFT_HOSTS:
+            return url, 0, "soft-host"
         status, _ = fetch(url, timeout=15)
         return url, status, ""
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=10) as ex:
         for url, status, note in ex.map(one, sorted(links)):
-            if note == "allow":
-                soft.append((url, "allowlist"))
+            if note in ("allow", "soft-host"):
+                soft.append((url, note))
             elif isinstance(status, int) and 200 <= status < 400:
                 continue
             elif isinstance(status, int) and status in SOFT:
