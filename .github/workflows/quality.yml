@@ -50,7 +50,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: visual-baseline
-          key: visual-baseline-v1
+          key: visual-baseline-v2
       - name: Visual baseline / pixel regression
         run: node scripts/visual-regression.mjs
       - uses: actions/upload-artifact@v4
