@@ -170,6 +170,14 @@ html[data-theme="light"] footer{background:linear-gradient(180deg,transparent,rg
       <div class="stats"><span><b>3</b> 份文献</span><span><b>3</b> 种语言</span><span><b>1215–1948</b></span></div>
       <span class="go">进入文献站 <span class="arrow">→</span></span>
     </a>
+  
+    <a class="card reveal" style="--accent:#8fa3b8" href="sitemap.xml">
+      <div class="card-top"><span class="mark">引</span><span class="tag">全站索引 · Sitemap</span></div>
+      <h2>全站索引<small>140 个页面 · 5 个站点</small></h2>
+      <p>按站点与目录列出的全部页面，方便查找某一篇；也可用浏览器页内搜索快速定位。</p>
+      <div class="stats"><span><b>140</b> 个页面</span><span><b>5</b> 个站点</span><span><b>XML</b> sitemap</span></div>
+      <span class="go">打开索引 <span class="arrow">→</span></span>
+    </a>
   </div>
 </section>
 </main>
@@ -188,9 +196,10 @@ html[data-theme="light"] footer{background:linear-gradient(180deg,transparent,rg
 
 <script>
 (function(){
-  var key='hub-theme';
+  var key='dsh-theme';
+  var oldKey='hub-theme';
   var saved='dark';
-  try{saved=localStorage.getItem(key)||'dark';}catch(e){}
+  try{saved=localStorage.getItem(key)||localStorage.getItem(oldKey)||'dark';}catch(e){}
   if(saved!=='light'&&saved!=='dark')saved='dark';
   var root=document.documentElement;
   function apply(t){
@@ -198,7 +207,7 @@ html[data-theme="light"] footer{background:linear-gradient(180deg,transparent,rg
     root.style.colorScheme=t==='dark'?'dark':'light';
     var b=document.getElementById('themeToggle');
     if(b){b.textContent=t==='dark'?'☀ 浅色':'☾ 深色';b.setAttribute('aria-label',t==='dark'?'切换到浅色背景':'切换到深色背景');}
-    try{localStorage.setItem(key,t);}catch(e){}
+    try{localStorage.setItem(key,t);localStorage.setItem(oldKey,t);}catch(e){}
   }
   apply(saved);
   document.getElementById('themeToggle').addEventListener('click',function(){
