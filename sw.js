@@ -1,5 +1,5 @@
 /* 学习资料总站 / 五个子站 · 统一缓存与离线兜底 */
-const CACHE = 'dsh-sites-v1';
+const CACHE = 'dsh-sites-v2';
 const CORE = [
   '/',
   '/index.html',
@@ -20,6 +20,7 @@ self.addEventListener('install', (event) => {
         if (res && res.ok) await cache.put(url, res.clone());
       } catch (e) {}
     }));
+    if (self.registration.navigationPreload) await self.registration.navigationPreload.enable();
     await self.skipWaiting();
   })());
 });
@@ -32,10 +33,12 @@ self.addEventListener('activate', (event) => {
   })());
 });
 
-async function networkFirst(request) {
+async function networkFirst(event) {
+  const request = event.request;
   const cache = await caches.open(CACHE);
   try {
-    const res = await fetch(request);
+    const preloaded = event.preloadResponse ? await event.preloadResponse : null;
+    const res = preloaded || await fetch(request);
     if (res && res.ok && request.method === 'GET') cache.put(request, res.clone());
     return res;
   } catch (e) {
@@ -63,7 +66,7 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
   if (request.mode === 'navigate') {
-    event.respondWith(networkFirst(request));
+    event.respondWith(networkFirst(event));
     return;
   }
   if (/\.(?:css|js|mjs|svg|png|jpe?g|webp|gif|ico|woff2?|ttf|pdf|json)(?:\?|$)/i.test(url.pathname + url.search)) {
