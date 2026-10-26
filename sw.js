@@ -10,7 +10,8 @@ const CORE = [
   '/cefr-vocab-test/',
   '/UDHR/',
   '/UDHR/udhr/',
-  '/UDHR/udhr/assets/udhr-app.js',
+  '/UDHR/udhr/assets/udhr-app.min.js',
+  '/UDHR/udhr/assets/udhr.min.css',
   '/UDHR/udhr/assets/data/1.json'
 ];
 const MAX_ENTRIES = 140;
