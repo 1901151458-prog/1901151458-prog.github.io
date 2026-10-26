@@ -33,7 +33,7 @@ for (const [name, urlPath] of pages) {
     const current = path.join(outDir, shot);
     const page = await browser.newPage({ viewport, reducedMotion: 'reduce' });
     try {
-      await page.goto(BASE + urlPath, { waitUntil: 'networkidle', timeout: 45000 });
+      await page.goto(BASE + urlPath, { waitUntil: 'domcontentloaded', timeout: 30000 });
       await page.addStyleTag({
         content:
           '*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}' +
@@ -41,7 +41,7 @@ for (const [name, urlPath] of pages) {
           '#daysNum,#timer,#stageTimer,#outTimer2{visibility:hidden!important}' +
           'html{scroll-behavior:auto!important}'
       });
-      await page.waitForTimeout(700);
+      await page.waitForTimeout(1400);
       await page.screenshot({ path: current, fullPage: false });
       if (!fs.existsSync(baseline)) {
         fs.copyFileSync(current, baseline);
