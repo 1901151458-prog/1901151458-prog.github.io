@@ -31,7 +31,11 @@ for (const [name, url] of pages) {
     const serious = axe.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical');
     if (serious.length) {
       failures.push(`${name}: ${serious.length} serious/critical axe violations`);
-      for (const v of serious) console.log(`[axe:${name}] ${v.id} ${v.help} (${v.nodes.length})`);
+      for (const v of serious) {
+        console.log(`[axe:${name}] ${v.id} ${v.help} (${v.nodes.length})`);
+        for (const n of v.nodes.slice(0, 8)) console.log(`  target: ${n.target.join(' ')}`);
+      }
+      fs.writeFileSync(`artifacts/axe-${name}.json`, JSON.stringify(axe, null, 2));
     }
     if (errors.length) {
       failures.push(`${name}: ${errors.length} console/page errors`);
