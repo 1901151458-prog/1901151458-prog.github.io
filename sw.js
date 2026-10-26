@@ -1,5 +1,5 @@
 /* 学习资料总站 / 五个子站 · 统一缓存与离线兜底 */
-const CACHE = 'dsh-sites-v2';
+const CACHE = 'dsh-sites-v3';
 const CORE = [
   '/',
   '/index.html',
@@ -8,8 +8,12 @@ const CORE = [
   '/sishu/',
   '/english-vocab-test/',
   '/cefr-vocab-test/',
-  '/UDHR/'
+  '/UDHR/',
+  '/UDHR/udhr/',
+  '/UDHR/udhr/assets/udhr-app.js',
+  '/UDHR/udhr/assets/data/1.json'
 ];
+const MAX_ENTRIES = 140;
 
 self.addEventListener('install', (event) => {
   event.waitUntil((async () => {
@@ -20,7 +24,9 @@ self.addEventListener('install', (event) => {
         if (res && res.ok) await cache.put(url, res.clone());
       } catch (e) {}
     }));
-    if (self.registration.navigationPreload) await self.registration.navigationPreload.enable();
+    if (self.registration.navigationPreload) {
+      await self.registration.navigationPreload.enable();
+    }
     await self.skipWaiting();
   })());
 });
@@ -33,13 +39,30 @@ self.addEventListener('activate', (event) => {
   })());
 });
 
+self.addEventListener('message', (event) => {
+  if (event.data === 'SKIP_WAITING') self.skipWaiting();
+});
+
+async function trim(cache) {
+  try {
+    const keys = await cache.keys();
+    if (keys.length > MAX_ENTRIES) {
+      const stale = keys.slice(0, keys.length - 90);
+      await Promise.all(stale.map((k) => cache.delete(k)));
+    }
+  } catch (e) {}
+}
+
 async function networkFirst(event) {
   const request = event.request;
   const cache = await caches.open(CACHE);
   try {
     const preloaded = event.preloadResponse ? await event.preloadResponse : null;
     const res = preloaded || await fetch(request);
-    if (res && res.ok && request.method === 'GET') cache.put(request, res.clone());
+    if (res && res.ok && request.method === 'GET') {
+      cache.put(request, res.clone());
+      await trim(cache);
+    }
     return res;
   } catch (e) {
     const cached = await cache.match(request, { ignoreSearch: true });
@@ -54,7 +77,10 @@ async function staleWhileRevalidate(request) {
   const cache = await caches.open(CACHE);
   const cached = await cache.match(request, { ignoreSearch: true });
   const network = fetch(request).then((res) => {
-    if (res && res.ok && request.method === 'GET') cache.put(request, res.clone());
+    if (res && res.ok && request.method === 'GET') {
+      cache.put(request, res.clone());
+      return trim(cache).then(() => res);
+    }
     return res;
   }).catch(() => null);
   return cached || (await network) || new Response('', { status: 504 });
