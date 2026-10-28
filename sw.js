@@ -1,8 +1,7 @@
 /* 学习资料总站 / 五个子站 · 统一缓存与离线兜底 */
-const CACHE = 'dsh-sites-v4';
+const CACHE = 'dsh-sites-v5';
 const CORE = [
   '/',
-  '/index.html',
   '/offline.html',
   '/english-materials/',
   '/sishu/',
@@ -14,8 +13,6 @@ const CORE = [
   '/UDHR/udhr/assets/udhr.min.css',
   '/UDHR/udhr/assets/data/1.json',
   '/sishu/assets/search-index.json',
-  '/english-materials/assets/search-index.json',
-  '/search-index.json',
   '/search-widget.css',
   '/search-widget.js'
 ];
