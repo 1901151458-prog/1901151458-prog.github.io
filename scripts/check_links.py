@@ -6,12 +6,13 @@ Usage:
   python scripts/check_links.py                 # internal + external
   python scripts/check_links.py --internal-only
   python scripts/check_links.py --max-external 80
-Exit code 1 when an internal page or a hard external link fails.
+Exit code 1 when an internal page or a hard 404/410 external link fails. Network errors and 5xx are soft warnings.
 """
 import argparse
 import concurrent.futures
 import re
 import sys
+import time
 import urllib.error
 import urllib.request
 from urllib.parse import urljoin, urlparse
@@ -33,15 +34,27 @@ SOFT_HOSTS = {"www.un.org", "un.org"}  # UN edge returns 502 to some CI/datacent
 SKIP_SUFFIX = (".pdf", ".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg", ".zip")
 
 
-def fetch(url, timeout=20):
-    req = urllib.request.Request(url, headers={"User-Agent": UA})
-    try:
-        with urllib.request.urlopen(req, timeout=timeout) as res:
-            return res.status, res.read()
-    except urllib.error.HTTPError as e:
-        return e.code, b""
-    except Exception as e:  # noqa: BLE001
-        return "ERR:" + type(e).__name__, b""
+def fetch(url, timeout=20, retries=2):
+    """Fetch with retry. Network errors/5xx are retried; 404/410 are final."""
+    last = None
+    for attempt in range(retries + 1):
+        req = urllib.request.Request(url, headers={"User-Agent": UA})
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as res:
+                return res.status, res.read()
+        except urllib.error.HTTPError as e:
+            if 500 <= e.code < 600 and attempt < retries:
+                last = e.code
+                time.sleep(0.8 * (attempt + 1))
+                continue
+            return e.code, b""
+        except Exception as e:  # noqa: BLE001
+            last = "ERR:" + type(e).__name__
+            if attempt < retries:
+                time.sleep(0.8 * (attempt + 1))
+                continue
+            return last, b""
+    return last, b""
 
 
 def sitemap_urls():
@@ -86,7 +99,7 @@ def check_external(links, max_external):
             return url, 0, "allow"
         if host in SOFT_HOSTS:
             return url, 0, "soft-host"
-        status, _ = fetch(url, timeout=15)
+        status, _ = fetch(url, timeout=15, retries=2)
         return url, status, ""
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=10) as ex:
@@ -95,9 +108,13 @@ def check_external(links, max_external):
                 soft.append((url, note))
             elif isinstance(status, int) and 200 <= status < 400:
                 continue
-            elif isinstance(status, int) and status in SOFT:
+            elif isinstance(status, str):
+                # DNS / TLS / timeout / connection reset: transient or geo/CI-specific
+                soft.append((url, "network"))
+            elif isinstance(status, int) and (status in SOFT or 500 <= status < 600):
                 soft.append((url, status))
             else:
+                # 404 / 410 are the only hard failures; other 4xx are bot/auth policy
                 hard.append((url, status))
     return hard, soft
 
