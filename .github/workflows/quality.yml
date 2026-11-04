@@ -22,7 +22,7 @@ jobs:
         with:
           node-version: '22'
       - name: Cache Playwright browsers
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('package.json') }}
@@ -53,7 +53,7 @@ jobs:
         with:
           node-version: '22'
       - name: Cache Playwright browsers
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('package.json') }}
@@ -62,7 +62,7 @@ jobs:
           npm install --no-audit --no-fund
           npx playwright install --with-deps chromium
       - name: Restore visual baseline
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: visual-baseline
           key: visual-baseline-v4
