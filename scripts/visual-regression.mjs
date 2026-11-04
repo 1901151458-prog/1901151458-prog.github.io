@@ -11,7 +11,14 @@ const pages = [
   ['sishu', '/sishu/'],
   ['vocab', '/english-vocab-test/'],
   ['cefr', '/cefr-vocab-test/'],
-  ['udhr', '/UDHR/udhr/']
+  ['udhr', '/UDHR/udhr/'],
+  ['english-search', '/english-materials/search.html'],
+  ['sdg-goal', '/english-materials/sdgs/reading/goal-1.html'],
+  ['sishu-jinsilu', '/sishu/jinsilu/'],
+  ['sishu-chuanxilu', '/sishu/chuanxilu/full.html'],
+  ['udhr-full', '/UDHR/udhr/full.html'],
+  ['vocab-print', '/english-vocab-test/print.html'],
+  ['cefr-print', '/cefr-vocab-test/print.html']
 ];
 const viewports = {
   desktop: { width: 1440, height: 1000 },

@@ -8,7 +8,14 @@ const pages = [
   ['sishu', 'https://1901151458-prog.github.io/sishu/'],
   ['vocab', 'https://1901151458-prog.github.io/english-vocab-test/'],
   ['cefr', 'https://1901151458-prog.github.io/cefr-vocab-test/'],
-  ['udhr', 'https://1901151458-prog.github.io/UDHR/udhr/']
+  ['udhr', 'https://1901151458-prog.github.io/UDHR/udhr/'],
+  ['english-search', 'https://1901151458-prog.github.io/english-materials/search.html'],
+  ['sdg-goal', 'https://1901151458-prog.github.io/english-materials/sdgs/reading/goal-1.html'],
+  ['sishu-jinsilu', 'https://1901151458-prog.github.io/sishu/jinsilu/'],
+  ['sishu-chuanxilu', 'https://1901151458-prog.github.io/sishu/chuanxilu/full.html'],
+  ['udhr-full', 'https://1901151458-prog.github.io/UDHR/udhr/full.html'],
+  ['vocab-print', 'https://1901151458-prog.github.io/english-vocab-test/print.html'],
+  ['cefr-print', 'https://1901151458-prog.github.io/cefr-vocab-test/print.html']
 ];
 
 fs.mkdirSync('artifacts/screens', { recursive: true });

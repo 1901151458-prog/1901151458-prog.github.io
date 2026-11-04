@@ -1,0 +1,32 @@
+name: Performance check
+
+on:
+  schedule:
+    - cron: '30 2 * * *'   # 每天 02:30 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: performance-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  performance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Availability, TTFB and page size
+        run: python scripts/check_performance.py
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: performance-report
+          path: artifacts/performance/
+          if-no-files-found: warn
+          retention-days: 30

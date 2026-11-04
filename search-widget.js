@@ -134,6 +134,18 @@
       });
       if (opt.placeholder) input.setAttribute('placeholder', opt.placeholder);
       if (opt.autofocus) input.focus();
+
+      /* 空闲时预取索引：让第一次搜索不再等 70–80 KB 下载 */
+      function prefetchIndex() {
+        var c = navigator.connection;
+        if (c && (c.saveData || /^(slow-)?2g$/.test(c.effectiveType || ''))) return;
+        load().catch(function () {});
+      }
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(prefetchIndex, { timeout: 3500 });
+      } else {
+        setTimeout(prefetchIndex, 2500);
+      }
     }
   };
 })();
