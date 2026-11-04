@@ -18,6 +18,7 @@
   if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return;
 
   var refreshing = false;
+  var dismissed = false;
 
   navigator.serviceWorker.addEventListener('controllerchange', function(){
     if (refreshing) location.reload();
@@ -45,7 +46,7 @@
   }
 
   function showUpdate(reg){
-    if (!reg || !reg.waiting) return;
+    if (!reg || !reg.waiting || dismissed) return;
     if (!navigator.serviceWorker.controller) return;
     if (document.getElementById('dsh-sw-update')) return;
     injectStyles();
@@ -84,6 +85,7 @@
       }
     });
     later.addEventListener('click', function(){
+      dismissed = true;
       box.remove();
     });
 
