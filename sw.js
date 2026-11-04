@@ -1,5 +1,7 @@
-/* 学习资料总站 / 五个子站 · 统一缓存与离线兜底 */
-const CACHE = 'dsh-sites-v5';
+/* 学习资料总站 / 五个子站 · 统一缓存与离线兜底
+   v6：页面导航最多等网络 2.5 秒；有缓存时先打开缓存页，后台继续更新 */
+const CACHE = 'dsh-sites-v6';
+const NAV_TIMEOUT = 2500;
 const CORE = [
   '/',
   '/offline.html',
@@ -56,24 +58,55 @@ async function trim(cache) {
   } catch (e) {}
 }
 
+function fetchAndCache(event, request, cache) {
+  return (async () => {
+    try {
+      const preloaded = event.preloadResponse ? await event.preloadResponse : null;
+      const res = preloaded || await fetch(request);
+      if (res && res.ok && request.method === 'GET') {
+        cache.put(request, res.clone());
+        trim(cache);
+      }
+      return res;
+    } catch (e) {
+      return null;
+    }
+  })();
+}
+
+async function offlineResponse(cache) {
+  const offline = await cache.match('/offline.html');
+  if (offline) return offline;
+  return new Response('网络暂不可用，请稍后重试。', {
+    status: 503,
+    headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+  });
+}
+
 async function networkFirst(event) {
   const request = event.request;
   const cache = await caches.open(CACHE);
-  try {
-    const preloaded = event.preloadResponse ? await event.preloadResponse : null;
-    const res = preloaded || await fetch(request);
-    if (res && res.ok && request.method === 'GET') {
-      cache.put(request, res.clone());
-      await trim(cache);
-    }
-    return res;
-  } catch (e) {
-    const cached = await cache.match(request, { ignoreSearch: true });
-    if (cached) return cached;
-    const offline = await cache.match('/offline.html');
-    if (offline) return offline;
-    return new Response('网络暂不可用，请稍后重试。', { status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+  const cached = await cache.match(request, { ignoreSearch: true });
+  const networkPromise = fetchAndCache(event, request, cache);
+
+  /* 让 SW 在页面已经返回后仍能完成后台写缓存 */
+  event.waitUntil(networkPromise.then(() => {}).catch(() => {}));
+
+  if (!cached) {
+    const res = await networkPromise;
+    return res || offlineResponse(cache);
   }
+
+  let timer = 0;
+  const timeout = new Promise((resolve) => {
+    timer = setTimeout(() => resolve(null), NAV_TIMEOUT);
+  });
+  const winner = await Promise.race([networkPromise, timeout]);
+  clearTimeout(timer);
+
+  if (winner) return winner;
+  /* 网络还没回来：先给缓存页，networkPromise 继续在后台更新 */
+  return cached;
 }
 
 async function staleWhileRevalidate(request) {
