@@ -18,6 +18,25 @@ const pages = [
   ['cefr-print', 'https://1901151458-prog.github.io/cefr-vocab-test/print.html']
 ];
 
+async function gotoWithRetry(page, url, errors) {
+  let last = null;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    errors.length = 0;
+    try {
+      const res = await page.goto(url, { waitUntil: 'networkidle', timeout: 45000 });
+      if (res && res.status() < 500) {
+        if (res.status() !== 200) throw new Error('HTTP ' + res.status());
+        return res;
+      }
+      last = new Error('HTTP ' + (res ? res.status() : 'no response'));
+    } catch (e) {
+      last = e;
+    }
+    await page.waitForTimeout(1200 * (attempt + 1));
+  }
+  throw last;
+}
+
 fs.mkdirSync('artifacts/screens', { recursive: true });
 const browser = await chromium.launch();
 const failures = [];
@@ -30,7 +49,7 @@ for (const [name, url] of pages) {
   page.on('console', (m) => { if (m.type() === 'error') errors.push('console: ' + m.text()); });
 
   try {
-    await page.goto(url, { waitUntil: 'networkidle', timeout: 45000 });
+    await gotoWithRetry(page, url, errors);
     await page.waitForTimeout(800);
     await page.screenshot({ path: `artifacts/screens/${name}.png`, fullPage: false });
 

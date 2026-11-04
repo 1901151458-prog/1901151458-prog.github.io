@@ -29,6 +29,24 @@ const outDir = 'artifacts/visual';
 fs.mkdirSync(baselineDir, { recursive: true });
 fs.mkdirSync(outDir, { recursive: true });
 
+async function gotoWithRetry(page, url) {
+  let last = null;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const res = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+      if (res && res.status() < 500) {
+        if (res.status() !== 200) throw new Error('HTTP ' + res.status());
+        return res;
+      }
+      last = new Error('HTTP ' + (res ? res.status() : 'no response'));
+    } catch (e) {
+      last = e;
+    }
+    await page.waitForTimeout(1200 * (attempt + 1));
+  }
+  throw last;
+}
+
 const browser = await chromium.launch();
 const failures = [];
 let created = 0, compared = 0;
@@ -40,7 +58,7 @@ for (const [name, urlPath] of pages) {
     const current = path.join(outDir, shot);
     const page = await browser.newPage({ viewport, reducedMotion: 'reduce' });
     try {
-      await page.goto(BASE + urlPath, { waitUntil: 'domcontentloaded', timeout: 30000 });
+      await gotoWithRetry(page, BASE + urlPath);
       await page.addStyleTag({
         content:
           '*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}' +
