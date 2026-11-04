@@ -32,7 +32,7 @@ self.addEventListener('install', (event) => {
     if (self.registration.navigationPreload) {
       await self.registration.navigationPreload.enable();
     }
-    await self.skipWaiting();
+    /* 不自动 skipWaiting：新版本先进入 waiting，由页面提示用户刷新 */
   })());
 });
 
