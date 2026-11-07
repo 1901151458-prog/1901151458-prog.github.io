@@ -21,6 +21,13 @@ import os
 import subprocess
 import sys
 
+# 保证在 CI（非 UTF-8 locale）下也能输出中文
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:  # noqa: BLE001
+        pass
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WORKSPACE = os.path.dirname(ROOT)
 ESBUILD = os.path.join(WORKSPACE, "work", "minify-tools", "node_modules", "esbuild", "bin", "esbuild")
