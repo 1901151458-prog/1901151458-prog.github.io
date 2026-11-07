@@ -18,7 +18,8 @@ const pages = [
   ['sishu-chuanxilu', '/sishu/chuanxilu/full.html'],
   ['udhr-full', '/UDHR/udhr/full.html'],
   ['vocab-print', '/english-vocab-test/print.html'],
-  ['cefr-print', '/cefr-vocab-test/print.html']
+  ['cefr-print', '/cefr-vocab-test/print.html'],
+  ['object-clauses', '/english-materials/object-clauses-g9/']
 ];
 const viewports = {
   desktop: { width: 1440, height: 1000 },

@@ -15,7 +15,8 @@ const pages = [
   ['sishu-chuanxilu', 'https://1901151458-prog.github.io/sishu/chuanxilu/full.html'],
   ['udhr-full', 'https://1901151458-prog.github.io/UDHR/udhr/full.html'],
   ['vocab-print', 'https://1901151458-prog.github.io/english-vocab-test/print.html'],
-  ['cefr-print', 'https://1901151458-prog.github.io/cefr-vocab-test/print.html']
+  ['cefr-print', 'https://1901151458-prog.github.io/cefr-vocab-test/print.html'],
+  ['object-clauses', 'https://1901151458-prog.github.io/english-materials/object-clauses-g9/']
 ];
 
 async function gotoWithRetry(page, url, errors) {
