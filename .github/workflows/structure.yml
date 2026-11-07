@@ -42,4 +42,4 @@ jobs:
         with:
           node-version: '22'
       - name: Structure self-check
-        run: python root-site/scripts/check_structure.py
+        run: python scripts/check_structure.py
