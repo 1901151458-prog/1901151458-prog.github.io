@@ -17,7 +17,9 @@ const pages = [
   ['vocab-print', 'https://1901151458-prog.github.io/english-vocab-test/print.html'],
   ['cefr-print', 'https://1901151458-prog.github.io/cefr-vocab-test/print.html'],
   ['object-clauses', 'https://1901151458-prog.github.io/english-materials/object-clauses-g9/'],
-  ['it-pattern', 'https://1901151458-prog.github.io/english-materials/it-pattern-g9/']
+  ['it-pattern', 'https://1901151458-prog.github.io/english-materials/it-pattern-g9/'],
+  ['g9-hub', 'https://1901151458-prog.github.io/english-materials/g9/'],
+  ['g9-unit1', 'https://1901151458-prog.github.io/english-materials/g9/unit1-reading/']
 ];
 
 async function gotoWithRetry(page, url, errors) {

@@ -20,7 +20,9 @@ const pages = [
   ['vocab-print', '/english-vocab-test/print.html'],
   ['cefr-print', '/cefr-vocab-test/print.html'],
   ['object-clauses', '/english-materials/object-clauses-g9/'],
-  ['it-pattern', '/english-materials/it-pattern-g9/']
+  ['it-pattern', '/english-materials/it-pattern-g9/'],
+  ['g9-hub', '/english-materials/g9/'],
+  ['g9-unit1', '/english-materials/g9/unit1-reading/']
 ];
 const viewports = {
   desktop: { width: 1440, height: 1000 },
