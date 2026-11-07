@@ -19,7 +19,8 @@ const pages = [
   ['udhr-full', '/UDHR/udhr/full.html'],
   ['vocab-print', '/english-vocab-test/print.html'],
   ['cefr-print', '/cefr-vocab-test/print.html'],
-  ['object-clauses', '/english-materials/object-clauses-g9/']
+  ['object-clauses', '/english-materials/object-clauses-g9/'],
+  ['it-pattern', '/english-materials/it-pattern-g9/']
 ];
 const viewports = {
   desktop: { width: 1440, height: 1000 },
