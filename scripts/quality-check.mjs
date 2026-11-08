@@ -22,7 +22,8 @@ const pages = [
   ['g9-unit1', 'https://1901151458-prog.github.io/english-materials/g9/unit1-reading/'],
   ['g9-unit2', 'https://1901151458-prog.github.io/english-materials/g9/unit2-reading/'],
   ['g9-unit3', 'https://1901151458-prog.github.io/english-materials/g9/unit3-reading/'],
-  ['g9-unit4', 'https://1901151458-prog.github.io/english-materials/g9/unit4-reading/']
+  ['g9-unit4', 'https://1901151458-prog.github.io/english-materials/g9/unit4-reading/'],
+  ['g9-unit5', 'https://1901151458-prog.github.io/english-materials/g9/unit5-reading/']
 ];
 
 async function gotoWithRetry(page, url, errors) {
