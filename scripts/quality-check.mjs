@@ -19,7 +19,8 @@ const pages = [
   ['object-clauses', 'https://1901151458-prog.github.io/english-materials/object-clauses-g9/'],
   ['it-pattern', 'https://1901151458-prog.github.io/english-materials/it-pattern-g9/'],
   ['g9-hub', 'https://1901151458-prog.github.io/english-materials/g9/'],
-  ['g9-unit1', 'https://1901151458-prog.github.io/english-materials/g9/unit1-reading/']
+  ['g9-unit1', 'https://1901151458-prog.github.io/english-materials/g9/unit1-reading/'],
+  ['g9-unit2', 'https://1901151458-prog.github.io/english-materials/g9/unit2-reading/']
 ];
 
 async function gotoWithRetry(page, url, errors) {
