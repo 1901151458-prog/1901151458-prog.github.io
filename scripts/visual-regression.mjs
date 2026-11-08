@@ -27,7 +27,8 @@ const pages = [
   ['g9-unit3', '/english-materials/g9/unit3-reading/'],
   ['g9-unit4', '/english-materials/g9/unit4-reading/'],
   ['g9-unit5', '/english-materials/g9/unit5-reading/'],
-  ['g9-unit6', '/english-materials/g9/unit6-reading/']
+  ['g9-unit6', '/english-materials/g9/unit6-reading/'],
+  ['g9-unit7', '/english-materials/g9/unit7-reading/']
 ];
 const viewports = {
   desktop: { width: 1440, height: 1000 },
