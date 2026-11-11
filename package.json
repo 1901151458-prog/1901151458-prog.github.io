@@ -4,7 +4,7 @@
   "type": "module",
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",
-    "@lhci/cli": "^0.15.1",
+    "@lhci/cli": "^0.16.0",
     "pixelmatch": "^8.0.0",
     "playwright": "^1.52.0",
     "pngjs": "^7.0.0"
