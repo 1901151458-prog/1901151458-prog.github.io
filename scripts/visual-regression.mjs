@@ -53,7 +53,10 @@ const pages = [
   ['g7b-unit2', '/english-materials/g7b/unit2-reading/'],
   ['g7b-unit3', '/english-materials/g7b/unit3-reading/'],
   ['g7b-unit4', '/english-materials/g7b/unit4-reading/'],
-  ['g7b-unit5', '/english-materials/g7b/unit5-reading/']
+  ['g7b-unit5', '/english-materials/g7b/unit5-reading/'],
+  ['g7b-unit6', '/english-materials/g7b/unit6-reading/'],
+  ['g7b-unit7', '/english-materials/g7b/unit7-reading/'],
+  ['g7b-unit8', '/english-materials/g7b/unit8-reading/']
 ];
 const viewports = {
   desktop: { width: 1440, height: 1000 },
