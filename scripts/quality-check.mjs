@@ -53,7 +53,9 @@ const pages = [
   ['g7b-unit5', 'https://1901151458-prog.github.io/english-materials/g7b/unit5-reading/'],
   ['g7b-unit6', 'https://1901151458-prog.github.io/english-materials/g7b/unit6-reading/'],
   ['g7b-unit7', 'https://1901151458-prog.github.io/english-materials/g7b/unit7-reading/'],
-  ['g7b-unit8', 'https://1901151458-prog.github.io/english-materials/g7b/unit8-reading/']
+  ['g7b-unit8', 'https://1901151458-prog.github.io/english-materials/g7b/unit8-reading/'],
+  ['g7a-hub', 'https://1901151458-prog.github.io/english-materials/g7a/'],
+  ['g7a-unit1', 'https://1901151458-prog.github.io/english-materials/g7a/unit1-reading/']
 ];
 
 async function gotoWithRetry(page, url, errors) {
